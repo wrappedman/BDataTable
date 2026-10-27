@@ -15,6 +15,14 @@ function click(window, element) { element.dispatchEvent(new window.MouseEvent('c
 function input(window, element, value) { element.value = value; element.dispatchEvent(new window.Event('input', { bubbles: true })); }
 function change(window, element, value) { if (value !== undefined) element.value = value; element.dispatchEvent(new window.Event('change', { bubbles: true })); }
 function cells(table) { return Array.from(table.table.tBodies[0].rows, row => Array.from(row.cells, cell => cell.textContent)); }
+function referenceCrc32(bytes) {
+  let crc = -1;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let i = 0; i < 8; i++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+  }
+  return (crc ^ -1) >>> 0;
+}
 function zipFiles(buffer) {
   const data = Buffer.from(buffer), files = {};
   let offset = 0;
@@ -23,7 +31,9 @@ function zipFiles(buffer) {
     const size = data.readUInt32LE(offset + 18), nameLength = data.readUInt16LE(offset + 26), extraLength = data.readUInt16LE(offset + 28);
     const name = data.subarray(offset + 30, offset + 30 + nameLength).toString();
     const start = offset + 30 + nameLength + extraLength;
-    files[name] = data.subarray(start, start + size).toString('utf8');
+    const contents = data.subarray(start, start + size);
+    assert.equal(data.readUInt32LE(offset + 14), referenceCrc32(contents), 'ZIP entry CRC matches content');
+    files[name] = contents.toString('utf8');
     offset = start + size;
   }
   assert.equal(data.readUInt32LE(offset), 0x02014b50, 'central directory follows file data');
@@ -40,6 +50,7 @@ test('browser script exposes a global and injects one namespaced stylesheet, wit
   assert.equal(document.querySelectorAll('#BDataTable-styles-v1').length, 1);
   const css = document.querySelector('#BDataTable-styles-v1').textContent;
   assert.match(css, /\.BDataTable-root/);
+  assert.match(css, /\.BDataTable-filter-row>th\{padding:8px 14px 12px!important\}/, 'column filters have space on all sides');
   for (const match of css.matchAll(/\.([A-Za-z][\w-]*)/g)) assert.ok(match[1].startsWith('BDataTable-'), match[1]);
   dom.window.close();
 });
@@ -50,7 +61,7 @@ test('initializes an HTML table, preserves live cell nodes, and restores the ori
   const originalButton = target.querySelector('button');
   let hits = 0;
   originalButton.addEventListener('click', () => hits++);
-  const table = new BDataTable(target, { pageSize: 2, columnSearch: true, rowSearch: true, selection: true });
+  const table = new BDataTable(target, { pageSize: 2, columnSearch: true, selection: true });
   assert.equal(table.getState().total, 3);
   assert.deepEqual(table.getRow(0), ['Charlie', '10']);
   assert.equal(table.getCell(0, 'person'), 'Charlie');
@@ -140,23 +151,6 @@ test('columns can be hidden, restored and redefined; the last visible column can
   assert.deepEqual(cells(table)[0], ['29', 'ADA']);
   assert.equal(table.getCell(0, 'upper'), 'ADA');
   assert.throws(() => table.setColumns([{ key: 'x' }, { key: 'x' }]), /unique/);
-});
-
-test('row search highlights each row independently without filtering it out', () => {
-  const { window, target } = setup();
-  const table = new BDataTable(target, { data: [['Red', 'Apple'], ['Red', 'Berry'], ['Green', 'Apple']], rowSearch: true, pageSize: 2 });
-  let rows = table.table.tBodies[0].rows;
-  input(window, rows[0].querySelector('.BDataTable-row-search'), 'apple');
-  input(window, rows[1].querySelector('.BDataTable-row-search'), 'red');
-  assert.equal(rows[0].cells[1].classList.contains('BDataTable-match'), true);
-  assert.equal(rows[1].cells[0].classList.contains('BDataTable-match'), true);
-  assert.equal(table.getState().filtered, 3);
-  table.goToPage(2).goToPage(1);
-  rows = table.table.tBodies[0].rows;
-  assert.equal(rows[0].querySelector('.BDataTable-row-search').value, 'apple');
-  assert.equal(rows[0].cells[1].classList.contains('BDataTable-match'), true);
-  table.setRowSearch(false);
-  assert.equal(table.table.querySelectorAll('.BDataTable-row-search').length, 0);
 });
 
 test('scroll mode appends on scroll and via load more without replacing existing rows', () => {
@@ -459,14 +453,6 @@ test('replacing a schema drops stale filters and an obsolete sort', () => {
   assert.equal(table.searchColumn('a'), '');
 });
 
-test('row search respects columns excluded from searching', () => {
-  const { window, target } = setup();
-  const table = new BDataTable(target, { data: [{ visible: 'safe', private: 'secret' }], rowSearch: true,
-    columns: [{ key: 'visible' }, { key: 'private', searchable: false }] });
-  input(window, table.table.querySelector('.BDataTable-row-search'), 'secret');
-  assert.equal(table.table.querySelectorAll('.BDataTable-match').length, 0);
-});
-
 test('column and pagination controls retain keyboard focus after redraw', () => {
   const { window, document, target } = setup();
   const table = new BDataTable(target, { data: Array.from({ length: 5 }, (_, i) => ({ a: i, b: i })), pageSize: 2 });
@@ -479,4 +465,113 @@ test('column and pagination controls retain keyboard focus after redraw', () => 
   assert.equal(table.getState().page, 2);
   assert.equal(document.activeElement.getAttribute('aria-current'), 'page');
   assert.equal(document.activeElement.textContent, '2');
+});
+
+test('independent column search can be toggled at runtime without leaving hidden filters active', () => {
+  const { window, target } = setup();
+  const table = new BDataTable(target, {
+    data: [{ name: 'سارا', city: 'تهران' }, { name: 'علی', city: 'شیراز' }],
+    language: 'fa', selection: true, columnSearch: true
+  });
+  let inputs = table.table.querySelectorAll('.BDataTable-column-input');
+  assert.equal(inputs.length, 2);
+  input(window, inputs[1], 'شیراز');
+  assert.equal(table.getState().filtered, 1);
+  table.setColumnSearch(false);
+  assert.equal(table.table.querySelectorAll('.BDataTable-column-input').length, 0);
+  assert.equal(table.getState().filtered, 2);
+  assert.deepEqual(table.getState().columnSearches, {});
+  assert.equal(table.getState().columnSearch, false);
+  table.setColumnSearch(true);
+  inputs = table.table.querySelectorAll('.BDataTable-column-input');
+  assert.equal(inputs.length, 2);
+  assert.equal(inputs[1].value, '');
+  assert.equal(table.getState().columnSearch, true);
+  // Programmatic column filtering is available even if the UI is disabled.
+  table.setColumnSearch(false).searchColumn('name', 'سارا');
+  assert.equal(table.getState().filtered, 1);
+  table.setColumnSearch(false);
+  assert.equal(table.getState().filtered, 2);
+});
+
+test('5,000 rows reuse search and sort indexes and refresh correctly after mutation', () => {
+  const { target } = setup();
+  const rows = Array.from({ length: 5000 }, (_, i) => ({ name: 'User ' + i, city: i % 2 ? 'تهران' : 'شیراز', score: i }));
+  let searchCalls = 0, sortCalls = 0;
+  const table = new BDataTable(target, {
+    data: rows, pageSize: 10, columns: [
+      { key: 'name', searchValue(value) { searchCalls++; return value; } },
+      { key: 'city', searchValue(value) { searchCalls++; return value; } },
+      { key: 'score', sortValue(value) { sortCalls++; return value; } }
+    ]
+  });
+  assert.equal(table.getState().total, 5000);
+  assert.equal(table.table.tBodies[0].rows.length, 10, 'only the active page is rendered');
+  table.search('not-present'); // Populate all searchable values.
+  assert.equal(searchCalls, 10000);
+  table.search('user 12');
+  table.searchColumn('city', 'تهران');
+  assert.equal(searchCalls, 10000, 'cached normalized values are reused across searches');
+  table.sort('score', 'desc');
+  assert.equal(sortCalls, 5000, 'sortValue is calculated once per row');
+  table.goToPage(2);
+  table.search('user');
+  assert.equal(sortCalls, 5000, 'sorting is reused while filtering or paging');
+  rows[0].name = 'Changed name'; rows[0].city = 'تهران'; rows[0].score = 10000;
+  table.searchColumn('city', '').search('Changed name');
+  assert.equal(table.getState().filtered, 0, 'cached values remain stable until refresh');
+  table.refresh();
+  assert.equal(table.getState().filtered, 1);
+  assert.equal(table.getData({ scope: 'filtered' })[0], rows[0]);
+  assert.equal(sortCalls, 10000, 'refresh invalidates the sort cache');
+  table.search('');
+  assert.equal(table.getData({ scope: 'filtered' })[0], rows[0], 'updated sort value is used');
+});
+
+test('pagination and display changes reuse the filtered view until query or data changes', () => {
+  const { target } = setup();
+  const rows = Array.from({ length: 100 }, (_, i) => ({ name: 'Person ' + i, city: 'Tehran' }));
+  let normalizations = 0;
+  const table = new BDataTable(target, { data: rows, pageSize: 5,
+    searchNormalizer(value) { normalizations++; return value.toLowerCase().trim(); } });
+  table.search('person');
+  const afterSearch = normalizations;
+  table.goToPage(2).setPageSize(10).setMode('scroll');
+  table.setColumnVisible('city', false);
+  assert.equal(normalizations, afterSearch, 'the result is not refiltered for display-only changes');
+  table.search('person 2');
+  assert.ok(normalizations > afterSearch);
+  assert.equal(table.getState().filtered, 11);
+  table.setColumnSearch(true).searchColumn('city', 'tehran');
+  table.setColumnSearch(false);
+  assert.deepEqual(table.getState().columnSearches, {});
+  assert.equal(table.getState().filtered, 11);
+});
+
+test('changing column definitions or replacing data invalidates cached search and sorting', async () => {
+  const { target } = setup();
+  const table = new BDataTable(target, { data: [{ name: 'alpha', score: 3 }, { name: 'beta', score: 1 }] });
+  table.search('alpha').sort('score', 'asc');
+  assert.equal(table.getState().filtered, 1);
+  await table.setData([{ name: 'alpha', score: 9 }, { name: 'alpha', score: 2 }]);
+  assert.deepEqual(table.getData({ scope: 'filtered' }).map(row => row.score), [2, 9]);
+  table.setColumns([
+    { key: 'name', searchValue: value => 'new ' + value },
+    { key: 'score', sortValue: value => -value }
+  ]);
+  table.search('new alpha');
+  assert.deepEqual(table.getData({ scope: 'filtered' }).map(row => row.score), [9, 2]);
+});
+
+test('destroy releases large cached data even if the instance is retained', () => {
+  const { target } = setup();
+  const data = Array.from({ length: 5000 }, (_, i) => ({ name: 'User ' + i }));
+  const table = new BDataTable(target, { data });
+  table.search('User');
+  table.destroy();
+  assert.equal(table._records.length, 0);
+  assert.equal(table._view.length, 0);
+  assert.equal(table._tbody.rows.length, 0);
+  assert.equal(table._source, null);
+  assert.equal(table.options.data, undefined);
 });

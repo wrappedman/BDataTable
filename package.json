@@ -3,12 +3,27 @@
   "version": "1.0.0",
   "description": "Dependency-free JavaScript data tables with built-in styling, search, sorting, pagination and export.",
   "main": "BDataTable.js",
-  "files": ["BDataTable.js", "README.md", "LICENSE"],
+  "files": [
+    "BDataTable.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "benchmark": "node benchmarks/large-table.js"
   },
-  "keywords": ["datatable", "table", "pagination", "vanilla-js", "rtl"],
+  "keywords": [
+    "datatable",
+    "table",
+    "pagination",
+    "vanilla-js",
+    "rtl"
+  ],
   "license": "GPL-3.0-only",
-  "engines": { "node": ">=18" },
-  "devDependencies": { "jsdom": "^26.1.0" }
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
 }

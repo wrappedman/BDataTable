@@ -51,11 +51,9 @@
 .BDataTable-root [hidden]{display:none!important}
 .BDataTable-sort-button{display:flex;align-items:center;gap:7px;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:inherit;cursor:pointer}
 .BDataTable-sort-icon{color:var(--BDataTable-accent);font-size:13px;line-height:1}
-.BDataTable-filter-row>th{padding-top:0!important;padding-bottom:10px!important}
+.BDataTable-filter-row>th{padding:8px 14px 12px!important}
 .BDataTable-column-input{min-width:85px;min-height:32px;padding:5px 8px;font-size:12px}
 .BDataTable-control-cell{width:1%;white-space:nowrap;text-align:center!important}
-.BDataTable-row-search{min-width:130px;min-height:32px;padding:5px 8px;font-size:12px}
-.BDataTable-table>tbody>tr>.BDataTable-match{background:var(--BDataTable-accent-soft)!important;box-shadow:inset 0 -2px var(--BDataTable-accent)}
 .BDataTable-empty{text-align:center!important;color:var(--BDataTable-muted);padding:36px 18px!important}
 .BDataTable-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--BDataTable-border)}
 .BDataTable-info{margin:0;color:var(--BDataTable-muted);font-size:12px}
@@ -63,7 +61,7 @@
 .BDataTable-page-button{min-width:34px;min-height:34px;padding:5px 9px}
 .BDataTable-ellipsis{padding:0 3px;color:var(--BDataTable-muted)}
 .BDataTable-download{display:none}
-@media(max-width:600px){.BDataTable-toolbar{padding:14px}.BDataTable-toolbar-group,.BDataTable-search-wrap{width:100%}.BDataTable-actions{width:100%;justify-content:space-between}.BDataTable-actions>.BDataTable-menu:first-child .BDataTable-menu-panel{inset-inline-start:0;inset-inline-end:auto}.BDataTable-footer{padding:12px 14px}.BDataTable-table>tbody>tr>td,.BDataTable-table>tbody>tr>th{padding:11px 12px}}
+@media(max-width:600px){.BDataTable-toolbar{padding:14px}.BDataTable-toolbar-group,.BDataTable-search-wrap{width:100%}.BDataTable-actions{width:100%;justify-content:space-between}.BDataTable-actions>.BDataTable-menu:first-child .BDataTable-menu-panel{inset-inline-start:0;inset-inline-end:auto}.BDataTable-footer{padding:12px 14px}.BDataTable-filter-row>th{padding-inline:12px!important}.BDataTable-table>tbody>tr>td,.BDataTable-table>tbody>tr>th{padding:11px 12px}}
 `;
 
   const LANGUAGES = {
@@ -71,7 +69,7 @@
       search: 'Search', searchPlaceholder: 'Search all columns…', rowsPerPage: 'Rows per page', rowsPerLoad: 'Rows per load',
       all: 'All', columns: 'Columns', export: 'Export', exportHTML: 'HTML', exportText: 'Text (.txt)',
       exportCSV: 'CSV', exportExcel: 'Excel (.xlsx)', filterColumn: 'Filter…', filterLabel: 'Filter {column}',
-      rowSearch: 'Search this row', rowSearchLabel: 'Search row {row}', selection: 'Select',
+      selection: 'Select',
       selectRow: 'Select row {row}', selectPage: 'Select all displayed rows', previous: 'Previous', next: 'Next',
       pageLabel: 'Page {page}', pagination: 'Pagination', loadMore: 'Load more',
       info: 'Showing {start}–{end} of {filtered} entries', filteredFrom: ' (filtered from {total} total)',
@@ -83,7 +81,7 @@
       search: 'جست‌وجو', searchPlaceholder: 'جست‌وجو در همهٔ ستون‌ها…', rowsPerPage: 'تعداد در هر صفحه', rowsPerLoad: 'تعداد در هر بار',
       all: 'همه', columns: 'ستون‌ها', export: 'خروجی', exportHTML: 'HTML', exportText: 'متن (.txt)',
       exportCSV: 'CSV', exportExcel: 'اکسل (.xlsx)', filterColumn: 'فیلتر…', filterLabel: 'فیلتر {column}',
-      rowSearch: 'جست‌وجوی ردیف', rowSearchLabel: 'جست‌وجو در ردیف {row}', selection: 'انتخاب',
+      selection: 'انتخاب',
       selectRow: 'انتخاب ردیف {row}', selectPage: 'انتخاب همهٔ ردیف‌های نمایش‌داده‌شده', previous: 'قبلی', next: 'بعدی',
       pageLabel: 'صفحهٔ {page}', pagination: 'صفحه‌بندی', loadMore: 'نمایش بیشتر',
       info: 'نمایش {start} تا {end} از {filtered} ردیف', filteredFrom: ' (فیلترشده از {total} ردیف)',
@@ -95,7 +93,7 @@
 
   const DEFAULTS = {
     theme: 'light', language: 'en', dir: null, pageSize: 10, pageSizes: [10, 25, 50, 100],
-    mode: 'pages', paging: true, searching: true, columnSearch: false, rowSearch: false,
+    mode: 'pages', paging: true, searching: true, columnSearch: false,
     columnVisibility: true, exporting: true, selection: false, showLength: true, showInfo: true,
     scrollHeight: 360, dataPath: null, label: null, styleNonce: null
   };
@@ -209,12 +207,18 @@
     while (number) { number--; name = String.fromCharCode(65 + number % 26) + name; number = Math.floor(number / 26); }
     return name;
   }
+  const CRC_TABLE = (() => {
+    const table = new Uint32Array(256);
+    for (let value = 0; value < table.length; value++) {
+      let crc = value;
+      for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+      table[value] = crc >>> 0;
+    }
+    return table;
+  })();
   function crc32(bytes) {
     let crc = -1;
-    for (let i = 0; i < bytes.length; i++) {
-      crc ^= bytes[i];
-      for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
-    }
+    for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ CRC_TABLE[(crc ^ bytes[i]) & 0xff];
     return (crc ^ -1) >>> 0;
   }
   // ZIP "store" method. XLSX files remain standards-compliant without a ZIP dependency.
@@ -290,7 +294,9 @@
       this._displayed = [];
       this._recordId = 0;
       this._selected = new Set();
-      this._rowTerms = new Map();
+      this._searchCache = new WeakMap();
+      this._orderedCache = null;
+      this._viewCache = null;
       this._columnTerms = new Map();
       this._search = '';
       this._sort = null;
@@ -350,7 +356,7 @@
         return {
           id: ++this._recordId, index, data: values.slice(), values, element: row, cells, controls: [],
           rowTabindex: row.getAttribute('tabindex'), rowChildren: Array.from(row.childNodes),
-          cellStates: cells.map(cell => ({ hidden: cell.getAttribute('hidden'), tabindex: cell.getAttribute('tabindex'), classAttribute: cell.getAttribute('class'), matched: cell.classList.contains('BDataTable-match'), children: Array.from(cell.childNodes), rendered: false }))
+          cellStates: cells.map(cell => ({ hidden: cell.getAttribute('hidden'), tabindex: cell.getAttribute('tabindex'), classAttribute: cell.getAttribute('class'), children: Array.from(cell.childNodes), rendered: false }))
         };
       });
       return original;
@@ -484,7 +490,6 @@
         } else th.textContent = column.title;
         row.appendChild(th);
       });
-      if (this.options.rowSearch) { const th = create(doc, 'th', 'BDataTable-control-cell', this.strings.rowSearch); th.scope = 'col'; row.appendChild(th); }
       this._thead.appendChild(row);
       if (this.options.columnSearch) {
         const filters = create(doc, 'tr', 'BDataTable-filter-row');
@@ -501,7 +506,6 @@
           }
           filters.appendChild(th);
         });
-        if (this.options.rowSearch) filters.appendChild(create(doc, 'th', 'BDataTable-control-cell'));
         this._thead.appendChild(filters);
       }
       this._updateSortHeader(); this._renderColumnsMenu();
@@ -557,31 +561,66 @@
       return typeof column[property] === 'function' ? column[property](value, record.data, record.index) : value;
     }
     _normalize(value) { return typeof this.options.searchNormalizer === 'function' ? String(this.options.searchNormalizer(text(value))) : normalize(value); }
-    _calculateView() {
-      const query = this._normalize(this._search);
-      const filters = this._columns.filter(column => column.searchable && this._normalize(this._columnTerms.get(column.id) || ''));
-      const result = this._records.filter(record => {
-        if (query && !this._columns.some(column => column.searchable && this._normalize(this._transform(record, column, 'searchValue')).includes(query))) return false;
-        return filters.every(column => this._normalize(this._transform(record, column, 'searchValue')).includes(this._normalize(this._columnTerms.get(column.id))));
+    _invalidateCaches() {
+      this._searchCache = new WeakMap();
+      this._orderedCache = null;
+      this._viewCache = null;
+    }
+    _searchText(record, column) {
+      let values = this._searchCache.get(record);
+      if (!values) { values = new Map(); this._searchCache.set(record, values); }
+      if (!values.has(column.id)) values.set(column.id, this._normalize(this._transform(record, column, 'searchValue')));
+      return values.get(column.id);
+    }
+    _orderedRecords() {
+      if (!this._sort) return this._records;
+      if (this._orderedCache) return this._orderedCache;
+      const column = this._columns.find(item => item.id === this._sort.id);
+      if (!column) return this._records;
+      const direction = this._sort.direction === 'asc' ? 1 : -1;
+      // Compute a sort value once per row rather than on every comparison.
+      const decorated = this._records.map(record => ({ record, value: this._transform(record, column, 'sortValue') }));
+      decorated.sort((a, b) => {
+        const av = a.value, bv = b.value;
+        const aEmpty = av == null || av === '' || (typeof av === 'number' && Number.isNaN(av));
+        const bEmpty = bv == null || bv === '' || (typeof bv === 'number' && Number.isNaN(bv));
+        if (aEmpty || bEmpty) return aEmpty === bEmpty ? a.record.index - b.record.index : (aEmpty ? 1 : -1);
+        let comparison;
+        if (typeof column.compare === 'function') comparison = Number(column.compare(av, bv, a.record.data, b.record.data)) || 0;
+        else if (typeof av === 'number' && typeof bv === 'number') comparison = av - bv;
+        else if (av instanceof Date && bv instanceof Date) comparison = av.getTime() - bv.getTime();
+        else comparison = this._collator.compare(text(av), text(bv));
+        return comparison ? comparison * direction : a.record.index - b.record.index;
       });
-      if (this._sort) {
-        const column = this._columns.find(item => item.id === this._sort.id);
-        if (column) {
-          const direction = this._sort.direction === 'asc' ? 1 : -1;
-          result.sort((a, b) => {
-            const av = this._transform(a, column, 'sortValue'), bv = this._transform(b, column, 'sortValue');
-            const aEmpty = av == null || av === '' || (typeof av === 'number' && Number.isNaN(av));
-            const bEmpty = bv == null || bv === '' || (typeof bv === 'number' && Number.isNaN(bv));
-            if (aEmpty || bEmpty) return aEmpty === bEmpty ? a.index - b.index : (aEmpty ? 1 : -1);
-            let comparison;
-            if (typeof column.compare === 'function') comparison = Number(column.compare(av, bv, a.data, b.data)) || 0;
-            else if (typeof av === 'number' && typeof bv === 'number') comparison = av - bv;
-            else if (av instanceof Date && bv instanceof Date) comparison = av.getTime() - bv.getTime();
-            else comparison = this._collator.compare(text(av), text(bv));
-            return comparison ? comparison * direction : a.index - b.index;
-          });
-        }
+      this._orderedCache = decorated.map(item => item.record);
+      return this._orderedCache;
+    }
+    _calculateView() {
+      if (this._viewCache) return this._viewCache;
+      const query = this._normalize(this._search);
+      const searchable = this._columns.filter(column => column.searchable);
+      const filters = searchable.map(column => ({ column, term: this._normalize(this._columnTerms.get(column.id) || '') })).filter(filter => filter.term);
+      const records = this._orderedRecords();
+      if (!query && !filters.length) {
+        this._viewCache = records.slice();
+        return this._viewCache;
       }
+      const result = [];
+      for (const record of records) {
+        if (query) {
+          let matched = false;
+          for (const column of searchable) {
+            if (this._searchText(record, column).includes(query)) { matched = true; break; }
+          }
+          if (!matched) continue;
+        }
+        let matched = true;
+        for (const filter of filters) {
+          if (!this._searchText(record, filter.column).includes(filter.term)) { matched = false; break; }
+        }
+        if (matched) result.push(record);
+      }
+      this._viewCache = result;
       return result;
     }
 
@@ -614,7 +653,7 @@
 
     _placeholder(message) {
       const row = create(this.document, 'tr'); const cell = create(this.document, 'td', 'BDataTable-empty', message);
-      cell.colSpan = Math.max(1, this._columns.filter(column => column.visible).length + (this.options.selection ? 1 : 0) + (this.options.rowSearch ? 1 : 0));
+      cell.colSpan = Math.max(1, this._columns.filter(column => column.visible).length + (this.options.selection ? 1 : 0));
       row.appendChild(cell); this._tbody.appendChild(row);
     }
 
@@ -650,7 +689,6 @@
           }
           if (this.options.onCellClick) cell.setAttribute('tabindex', '0');
           else if (state) restoreAttribute(cell, 'tabindex', state.tabindex);
-          cell.classList.remove('BDataTable-match');
           row.appendChild(cell);
         });
         if (this.options.onRowClick) row.setAttribute('tabindex', '0');
@@ -675,29 +713,7 @@
         cell.appendChild(input); row.insertBefore(cell, row.firstChild);
         if (record.element) record.controls.push(cell);
       }
-      if (this.options.rowSearch) {
-        const cell = create(doc, 'td', 'BDataTable-control-cell');
-        const input = create(doc, 'input', 'BDataTable-input BDataTable-row-search'); input.type = 'search';
-        input.placeholder = this.strings.rowSearch;
-        input.setAttribute('aria-label', format(this.strings.rowSearchLabel, { row: this._number.format(record.index + 1) }));
-        input.value = this._rowTerms.get(record.id) || '';
-        input.addEventListener('input', () => {
-          if (input.value) this._rowTerms.set(record.id, input.value); else this._rowTerms.delete(record.id);
-          this._highlightRow(record, row);
-        });
-        cell.appendChild(input); row.appendChild(cell);
-        if (record.element) record.controls.push(cell);
-        this._highlightRow(record, row);
-      }
       return row;
-    }
-
-    _highlightRow(record, row) {
-      const query = this._normalize(this._rowTerms.get(record.id) || '');
-      Array.from(row.cells).forEach(cell => {
-        const column = this._cellMap.get(cell);
-        if (column) cell.classList.toggle('BDataTable-match', !!query && column.visible && column.searchable && this._normalize(this._transform(record, column, 'searchValue')).includes(query));
-      });
     }
 
     _syncSelection() {
@@ -842,7 +858,7 @@
         this._buildHeader();
       }
       this._records = rows.map((data, index) => ({ id: ++this._recordId, index, data }));
-      this._selected.clear(); this._rowTerms.clear(); this._loading = false; this._error = null;
+      this._selected.clear(); this._invalidateCaches(); this._loading = false; this._error = null;
       this._refresh(true);
       this._emit('data', { table: this, rows: this.getData() });
       return this;
@@ -895,19 +911,23 @@
         record.values = record.cells.map((cell, i) => record.cellStates[i].rendered ? text(record.values[i]) : cell.textContent.trim());
         record.data = record.values.slice();
       });
-      this._records = this._originalRecords; this._selected.clear(); this._rowTerms.clear(); this._loading = false; this._error = null;
+      this._records = this._originalRecords; this._selected.clear(); this._invalidateCaches(); this._loading = false; this._error = null;
       this._refresh(true); this.ready = Promise.resolve(this); return this.ready;
     }
-    refresh() { this._refresh(false); return this; }
+    refresh() { this._invalidateCaches(); this._refresh(false); return this; }
     search(value) {
       if (arguments.length === 0) return this._search;
-      this._search = text(value); if (this.searchInput && this.searchInput.value !== this._search) this.searchInput.value = this._search;
+      const next = text(value);
+      if (this._search !== next) this._viewCache = null;
+      this._search = next; if (this.searchInput && this.searchInput.value !== this._search) this.searchInput.value = this._search;
       this._refresh(true); return this;
     }
     searchColumn(reference, value) {
       const column = this._resolveColumn(reference);
       if (arguments.length < 2) return this._columnTerms.get(column.id) || '';
-      if (value == null || value === '') this._columnTerms.delete(column.id); else this._columnTerms.set(column.id, text(value));
+      const term = value == null ? '' : text(value);
+      if ((this._columnTerms.get(column.id) || '') !== term) this._viewCache = null;
+      if (!term) this._columnTerms.delete(column.id); else this._columnTerms.set(column.id, term);
       // Keep the focused input in place, including its caret, while filtering.
       const visibleColumns = this._columns.filter(item => item.visible);
       const filterRow = this._thead.querySelector('.BDataTable-filter-row');
@@ -921,6 +941,7 @@
       if (!column.sortable) return this;
       if (direction != null && !['asc', 'desc'].includes(direction)) throw new TypeError('Sort direction must be "asc", "desc", or null.');
       this._sort = direction == null ? null : { id: column.id, direction };
+      this._orderedCache = null; this._viewCache = null;
       this._updateSortHeader(); this._refresh(true); return this;
     }
     goToPage(page) {
@@ -942,7 +963,7 @@
     }
     setColumns(columns) {
       this._columns = normalizeColumns(columns); this._autoColumns = false;
-      this._pruneColumnState(); this._buildHeader(); this._refresh(true); return this;
+      this._pruneColumnState(); this._invalidateCaches(); this._buildHeader(); this._refresh(true); return this;
     }
     _setThemeClass(theme) {
       THEMES.forEach(name => this.root.classList.remove('BDataTable-theme-' + name));
@@ -958,8 +979,14 @@
       if (this.lengthLabel) this.lengthLabel.textContent = mode === 'scroll' ? this.strings.rowsPerLoad : this.strings.rowsPerPage;
       this._refresh(true); return this;
     }
-    setRowSearch(enabled) {
-      this.options.rowSearch = Boolean(enabled); this._buildHeader(); this._refresh(false); return this;
+    setColumnSearch(enabled) {
+      enabled = Boolean(enabled);
+      // Remove invisible filters when the controls are switched off.
+      if (!enabled && this._columnTerms.size) { this._columnTerms.clear(); this._viewCache = null; }
+      this.options.columnSearch = enabled;
+      this._buildHeader(); this._refresh(true);
+      this._emit('columnsearchtoggle', { table: this, enabled });
+      return this;
     }
     loadMore() {
       if (this._destroyed || this._loading || this._error || !this.options.paging || this.options.mode !== 'scroll' || this.options.pageSize === -1 || this._displayed.length >= this._view.length) return false;
@@ -981,7 +1008,7 @@
     clearSelection() { this._selected.clear(); this._syncSelection(); this._selectionChanged(); return this; }
     getState() {
       return { search: this._search, columnSearches: Object.fromEntries(this._columnTerms), sort: this._sort && Object.assign({}, this._sort),
-        page: this._page + 1, pageSize: this.options.pageSize, mode: this.options.mode, theme: this.options.theme,
+        page: this._page + 1, pageSize: this.options.pageSize, mode: this.options.mode, theme: this.options.theme, columnSearch: this.options.columnSearch,
         total: this._records.length, filtered: this._view.length, displayed: this._displayed.length,
         visibleColumns: this._columns.filter(column => column.visible).map(column => column.id), selected: this._selected.size, loading: this._loading };
     }
@@ -1032,7 +1059,6 @@
             const state = record.cellStates[index];
             if (state.rendered) cell.replaceChildren(...state.children);
             restoreAttribute(cell, 'hidden', state.hidden); restoreAttribute(cell, 'tabindex', state.tabindex);
-            cell.classList.toggle('BDataTable-match', state.matched);
             if (state.classAttribute === null && !cell.className) cell.removeAttribute('class');
           });
           restoreAttribute(record.element, 'tabindex', record.rowTabindex);
@@ -1047,6 +1073,13 @@
         if (this.root.parentNode) this.root.parentNode.insertBefore(this.table, this.root);
       }
       this.root.remove(); INSTANCES.delete(this.target);
+      // Release large data/index structures even if the caller retains the instance.
+      this._tbody.replaceChildren();
+      this._records = []; this._view = []; this._displayed = []; this._originalRecords = [];
+      this._selected.clear(); this._columnTerms.clear(); this._invalidateCaches();
+      this._rowMap = new WeakMap(); this._cellMap = new WeakMap();
+      this._original = null; this._source = null; this._abort = null;
+      delete this.options.data; delete this.options.ajax;
     }
   }
 

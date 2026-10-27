@@ -65,16 +65,36 @@
     .BDemo-pill[data-state="pending"]{background:#fff5e5;color:#cc9240}.BDemo-pill[data-state="inactive"]{background:#f0f2f5;color:#8994a5}
     .BDemo-id{direction:ltr;display:inline-block;font:11px/1.5 ui-monospace,monospace;color:var(--BDataTable-muted)}
     .BDemo-footnote{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#9aa6b5;font-size:11px;padding:11px 3px 0}.BDemo-footnote strong{color:#687b99;font-weight:700}
-    .BDemo-lower{padding:76px 0 82px;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
-    .BDemo-card{border:1px solid #e5eaf2;border-radius:16px;background:white;padding:24px;box-shadow:0 14px 36px #253a5a08;min-width:0}
-    .BDemo-card-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:18px}.BDemo-card h3{margin:2px 0 4px;font-size:16px;letter-spacing:-.02em}.BDemo-card p{margin:0;color:#8a97a9;font-size:11px;line-height:1.9}
-    .BDemo-card-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;color:#5578da;background:#eef3ff;font-weight:850;font-size:15px}
-    .BDemo-snippet{background:#17233c;color:#c3d0e8;border-radius:11px;padding:17px 18px;direction:ltr;text-align:left;overflow:auto}
-    .BDemo-snippet pre{margin:0;font:11px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
-    .BDemo-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px}.BDemo-card-bottom a{color:#4c6cd5;font-size:11px;font-weight:800}.BDemo-copy{border:0;background:#f3f6fb;color:#617395;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700}
+    .BDemo-gallery{padding:78px 0 86px;scroll-margin-top:25px}
+    .BDemo-gallery-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+    .BDemo-gallery-heading h2{font-size:23px;letter-spacing:-.035em;margin:5px 0 3px}.BDemo-gallery-heading p{color:#8996a8;font-size:12px;margin:0}
+    .BDemo-gallery-link{font-size:11px;font-weight:800;color:#4b6dd6}
+    .BDemo-tabs{display:flex;gap:6px;overflow-x:auto;padding:5px;margin-bottom:16px;background:#eef2f7;border-radius:12px;width:max-content;max-width:100%;scrollbar-width:thin}
+    .BDemo-tab{border:0;border-radius:8px;padding:9px 14px;background:transparent;color:#77869c;font-size:12px;font-weight:750;white-space:nowrap}
+    .BDemo-tab[aria-selected="true"]{background:#fff;color:#3d5fc7;box-shadow:0 2px 8px #263d6010}.BDemo-tab:focus-visible,.BDemo-small-button:focus-visible,.BDemo-copy:focus-visible{outline:3px solid #cad7ff;outline-offset:2px}
+    .BDemo-example-panel{background:#fff;border:1px solid #e5eaf2;border-radius:16px;padding:24px;box-shadow:0 14px 36px #253a5a08;min-width:0}
+    .BDemo-example-panel[hidden]{display:none}
+    .BDemo-example-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:19px}.BDemo-example-head h3{margin:2px 0 3px;font-size:17px;letter-spacing:-.02em}.BDemo-example-head p{margin:0;color:#8996a8;font-size:11px;line-height:1.9}
+    .BDemo-example-index{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:11px;color:#5578da;background:#eef3ff;font-weight:850;font-size:14px;direction:ltr}
+    .BDemo-example-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+    .BDemo-example-preview{min-width:0}.BDemo-example-caption{font-size:11px;font-weight:800;color:#7e8da2;margin:0 0 8px}.BDemo-example-caption:not(:first-child){margin-top:18px}
+    .BDemo-code-box{direction:ltr;text-align:left;min-width:0;background:#17233c;color:#c3d0e8;border-radius:12px;overflow:hidden}
+    .BDemo-code-box-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #2a3853;color:#8fa2c2;font:11px/1.4 ui-monospace,monospace}
+    .BDemo-code-box pre{margin:0;padding:16px;max-height:420px;overflow:auto;font:12px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}
+    .BDemo-copy{border:1px solid #40516e;background:#263650;color:#c3d0e8;border-radius:7px;padding:5px 9px;font:700 11px/1.4 system-ui,Tahoma,sans-serif;cursor:pointer;white-space:nowrap}.BDemo-copy:hover{background:#30435f}
+    .BDemo-example-actions{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0 9px}
+    .BDemo-small-button{border:1px solid #e0e7f1;background:#f9fbfe;color:#526886;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700}.BDemo-small-button:hover{color:#3e60cc;border-color:#b9c9f3}
+    .BDemo-example-output{margin:10px 0 0;padding:9px 11px;border:1px solid #e8edf6;border-radius:9px;background:#f8fafd;color:#6d7e98;font-size:11px;line-height:1.8;min-height:38px;overflow-wrap:anywhere}
+    .BDemo-example-list{display:flex;gap:8px;flex-wrap:wrap;list-style:none;margin:0 0 12px;padding:0}.BDemo-example-list li{padding:4px 10px;border-radius:7px;background:#f1f5fb;color:#697c99;font-size:11px}
+    .BDemo-note{color:#96a2b1;font-size:11px;line-height:1.9;margin:10px 0 0}
+    .BDemo-code-details{margin-top:19px;border:1px solid #e2e9f3;border-radius:12px;background:white;overflow:hidden}
+    .BDemo-code-details>summary{padding:13px 16px;cursor:pointer;color:#536987;font-size:12px;font-weight:750}.BDemo-code-details .BDemo-code-box{border-radius:0}.BDemo-code-details .BDemo-details-note{padding:0 16px 10px}
+    .BDemo-code-details-link{color:#4b6dd6;font-size:11px;font-weight:700;margin-inline-start:8px}
+    .BDemo-load-label{font-size:11px;font-weight:700;color:#8794a7}.BDemo-performance{color:#8a98aa;font-size:11px;min-height:18px}
+    .BDemo-checkline{display:inline-flex;align-items:center;gap:5px;color:#7d8ca0;font-size:11px;font-weight:700}.BDemo-checkline input{accent-color:#4166e3}
     .BDemo-footer{border-top:1px solid #e7ebf2;background:white;padding:24px 0;color:#9aa5b5;font-size:11px}.BDemo-footer-inner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.BDemo-footer strong{color:#627493;direction:ltr;display:inline-block}
-    @media(max-width:900px){.BDemo-container{width:min(100% - 40px,1370px)}.BDemo-hero{gap:35px}.BDemo-nav{gap:15px}.BDemo-stat{padding:0 20px}.BDemo-stat-note{display:none}.BDemo-lower{gap:14px}}
-    @media(max-width:700px){.BDemo-header{height:65px}.BDemo-container{width:calc(100% - 28px)}.BDemo-nav{display:none}.BDemo-header-link{padding:8px 10px}.BDemo-hero{padding:38px 0 30px;display:block}.BDemo-hero h1{font-size:29px}.BDemo-code-preview{margin-top:28px;max-width:none}.BDemo-stats{margin-bottom:34px;justify-content:space-between}.BDemo-stat{padding:0 12px;gap:7px}.BDemo-stat strong{font-size:18px}.BDemo-stat span{font-size:10px}.BDemo-lower{padding:55px 0;grid-template-columns:1fr}.BDemo-card{padding:18px}.BDemo-section-head h2{font-size:20px}}
+    @media(max-width:900px){.BDemo-container{width:min(100% - 40px,1370px)}.BDemo-hero{gap:35px}.BDemo-nav{gap:15px}.BDemo-stat{padding:0 20px}.BDemo-stat-note{display:none}.BDemo-example-layout{gap:14px}}
+    @media(max-width:700px){.BDemo-header{height:65px}.BDemo-container{width:calc(100% - 28px)}.BDemo-nav{display:none}.BDemo-header-link{padding:8px 10px}.BDemo-hero{padding:38px 0 30px;display:block}.BDemo-hero h1{font-size:29px}.BDemo-code-preview{margin-top:28px;max-width:none}.BDemo-stats{margin-bottom:34px;justify-content:space-between}.BDemo-stat{padding:0 12px;gap:7px}.BDemo-stat strong{font-size:18px}.BDemo-stat span{font-size:10px}.BDemo-gallery{padding:58px 0}.BDemo-example-panel{padding:17px}.BDemo-example-layout{grid-template-columns:1fr}.BDemo-code-box pre{max-height:330px}.BDemo-section-head h2{font-size:20px}}
     @media(max-width:400px){.BDemo-header-link span{display:none}.BDemo-stat{padding:0 8px}.BDemo-stat strong{font-size:16px}.BDemo-controls{align-items:start;flex-direction:column}}
   </style>
 </head>
@@ -123,28 +143,125 @@
         <div class="BDemo-controls-group">
           <div class="BDemo-segment" role="group" aria-label="روش نمایش ردیف‌ها"><button type="button" data-mode="pages" aria-pressed="true">صفحه‌بندی</button><button type="button" data-mode="scroll" aria-pressed="false">اسکرول پیوسته</button></div>
           <label class="BDemo-select-label">تم نمایش <select id="theme"><option value="light">روشن</option><option value="dark">تیره</option><option value="ocean">اقیانوسی</option></select></label>
+          <label class="BDemo-toggle"><input id="column-search" type="checkbox" checked> جست‌وجوی مستقل هر ستون</label>
         </div>
-        <label class="BDemo-toggle"><input id="row-search" type="checkbox"> جست‌وجوی مستقل هر ردیف</label>
+        <div class="BDemo-controls-group"><span class="BDemo-load-label">حجم داده:</span><div class="BDemo-segment" role="group" aria-label="تعداد داده‌های نمونه"><button type="button" data-dataset="48" aria-pressed="true">۴۸ ردیف</button><button type="button" data-dataset="5000" aria-pressed="false">۵٬۰۰۰ ردیف</button></div></div>
       </div>
       <div id="people-table"></div>
-      <div class="BDemo-footnote"><span>برای مرتب‌سازی روی عنوان هر ستون کلیک کنید؛ در موبایل جدول را افقی بکشید.</span><span id="last-click" aria-live="polite">روی یک خانه کلیک کنید تا اطلاعات آن را ببینید.</span></div>
+      <div class="BDemo-footnote"><span>برای مرتب‌سازی روی عنوان ستون کلیک کنید؛ در موبایل جدول را افقی بکشید.</span><span id="last-click" aria-live="polite">روی یک خانه کلیک کنید تا اطلاعات آن را ببینید.</span></div>
+      <div id="performance-info" class="BDemo-performance" aria-live="polite">برای آزمایش حجم بالا، گزینهٔ ۵٬۰۰۰ ردیف را انتخاب کنید.</div>
+      <details class="BDemo-code-details">
+        <summary>کد راه‌اندازی و کنترل جدول تعاملی</summary>
+        <p class="BDemo-note BDemo-details-note">این کد نمونه‌ای ساده و قابل کپی است؛ کد کامل رندر و کنترل‌های همین صفحه در <a class="BDemo-gallery-link" href="demo.js">demo.js</a> قرار دارد.</p>
+        <div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>example.html / JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="main-code">کپی کد</button></div><pre id="main-code"></pre></div>
+      </details>
     </section>
-    <section id="quick-start" class="BDemo-lower" aria-label="نمونه‌های شروع سریع">
-      <article class="BDemo-card">
-        <div class="BDemo-card-head"><div><div class="BDemo-kicker">شروع سریع</div><h3>تنها با یک فایل</h3><p>اسکریپت را اضافه کنید و جدول موجود را راه‌اندازی کنید.</p></div><div class="BDemo-card-icon" aria-hidden="true">&lt;/&gt;</div></div>
-        <div class="BDemo-snippet"><pre id="copy-code">&lt;script src="BDataTable.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  const table = new BDataTable('#my-table', {
-    language: 'fa',
-    pageSize: 10,
-    columnSearch: true
-  });
-&lt;/script&gt;</pre></div>
-        <div class="BDemo-card-bottom"><a href="README.md">مشاهدهٔ راهنمای کامل ←</a><button id="copy-button" class="BDemo-copy" type="button">کپی کد</button></div>
+    <section id="quick-start" class="BDemo-gallery" aria-labelledby="examples-title">
+      <div class="BDemo-gallery-heading">
+        <div><div class="BDemo-kicker">نمونه‌ها و کد راه‌اندازی</div><h2 id="examples-title">هر قابلیت، یک مثال واقعی</h2><p>منبع داده را انتخاب کنید، نمونه را امتحان کنید و کد همان نمونه را بردارید.</p></div>
+        <a class="BDemo-gallery-link" href="README.md">همهٔ تنظیمات و API در مستندات ←</a>
+      </div>
+      <div class="BDemo-tabs" role="tablist" aria-label="انواع نمونه‌ها">
+        <button class="BDemo-tab" id="tab-html" role="tab" type="button" aria-selected="true" aria-controls="panel-html" tabindex="0" data-example="html">جدول HTML</button>
+        <button class="BDemo-tab" id="tab-object" role="tab" type="button" aria-selected="false" aria-controls="panel-object" tabindex="-1" data-example="object">دادهٔ جاوااسکریپت</button>
+        <button class="BDemo-tab" id="tab-list" role="tab" type="button" aria-selected="false" aria-controls="panel-list" tabindex="-1" data-example="list">آرایه و لیست</button>
+        <button class="BDemo-tab" id="tab-json" role="tab" type="button" aria-selected="false" aria-controls="panel-json" tabindex="-1" data-example="json">JSON و Async</button>
+        <button class="BDemo-tab" id="tab-api" role="tab" type="button" aria-selected="false" aria-controls="panel-api" tabindex="-1" data-example="api">کنترل‌ها و رویدادها</button>
+        <button class="BDemo-tab" id="tab-advanced" role="tab" type="button" aria-selected="false" aria-controls="panel-advanced" tabindex="-1" data-example="advanced">تنظیمات پیشرفته</button>
+      </div>
+      <article class="BDemo-example-panel" id="panel-html" role="tabpanel" aria-labelledby="tab-html" tabindex="0">
+        <div class="BDemo-example-head"><div><h3>جدول HTML موجود</h3><p>جدول قبلی، رویداد کلیک روی ردیف و بازگرداندن آن با destroy.</p></div><span class="BDemo-example-index" aria-hidden="true">01</span></div>
+        <div class="BDemo-example-layout"><div id="preview-html" class="BDemo-example-preview">
+          <p class="BDemo-example-caption">پروژه‌های نمونه</p>
+          <table id="html-table" aria-label="پروژه‌های نمونه">
+            <thead>
+              <tr><th data-key="project">پروژه</th><th data-key="owner">مسئول</th><th data-key="status">وضعیت</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>وب‌سایت جدید</td><td>نرگس</td><td>در حال انجام</td></tr>
+              <tr><td>اپلیکیشن موبایل</td><td>آرمان</td><td>تکمیل‌شده</td></tr>
+              <tr><td>داشبورد مدیریت</td><td>هلیا</td><td>در انتظار</td></tr>
+            </tbody>
+          </table>
+          <div class="BDemo-example-actions">
+            <button class="BDemo-small-button" id="html-destroy" type="button">حذف ماژول</button>
+          </div>
+          <p id="html-result" class="BDemo-example-output" aria-live="polite">روی یکی از ردیف‌ها کلیک کنید.</p>
+        </div><div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>HTML + JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="code-html">کپی کد</button></div><pre id="code-html"></pre></div></div>
       </article>
-      <article class="BDemo-card BDemo-mini">
-        <div class="BDemo-card-head"><div><div class="BDemo-kicker">جدول HTML موجود</div><h3>از اطلاعات فعلی شروع کنید</h3><p>برای یک جدول معمولی HTML هم فقط کافی‌ست آن را انتخاب کنید.</p></div><div class="BDemo-card-icon" aria-hidden="true">▦</div></div>
-        <table id="html-table" aria-label="پروژه‌های نمونه"><thead><tr><th>پروژه</th><th>مسئول</th><th>وضعیت</th></tr></thead><tbody><tr><td>وب‌سایت جدید</td><td>نرگس</td><td>در حال انجام</td></tr><tr><td>اپلیکیشن موبایل</td><td>آرمان</td><td>تکمیل‌شده</td></tr><tr><td>داشبورد مدیریت</td><td>هلیا</td><td>در انتظار</td></tr></tbody></table>
+      <article class="BDemo-example-panel" id="panel-object" role="tabpanel" aria-labelledby="tab-object" tabindex="0" hidden>
+        <div class="BDemo-example-head"><div><h3>ستون‌ها و اطلاعات از جاوااسکریپت</h3><p>تعریف ستون، نمایش سفارشی، انتخاب ردیف، تغییر داده و به‌روزرسانی.</p></div><span class="BDemo-example-index" aria-hidden="true">02</span></div>
+        <div class="BDemo-example-layout"><div id="preview-object" class="BDemo-example-preview">
+          <p class="BDemo-example-caption">دادهٔ آرایه‌ای از شیءها</p>
+          <div id="object-table"></div>
+          <div class="BDemo-example-actions">
+            <button class="BDemo-small-button" id="object-add" type="button">افزودن داده با setData</button>
+            <button class="BDemo-small-button" id="object-update" type="button">تغییر داده و refresh</button>
+            <button class="BDemo-small-button" id="object-columns" type="button">تغییر ستون‌ها</button>
+          </div>
+          <p id="object-result" class="BDemo-example-output" aria-live="polite">با کلیک روی خانه، اطلاعات آن را ببینید.</p>
+        </div><div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>HTML + JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="code-object">کپی کد</button></div><pre id="code-object"></pre></div></div>
+      </article>
+      <article class="BDemo-example-panel" id="panel-list" role="tabpanel" aria-labelledby="tab-list" tabindex="0" hidden>
+        <div class="BDemo-example-head"><div><h3>آرایهٔ دوبعدی، لیست HTML و Set</h3><p>چند شکل متفاوت از داده، بدون تبدیل دستی به جدول.</p></div><span class="BDemo-example-index" aria-hidden="true">03</span></div>
+        <div class="BDemo-example-layout"><div id="preview-list" class="BDemo-example-preview">
+          <p class="BDemo-example-caption">آرایهٔ دوبعدی</p>
+          <div id="matrix-table"></div>
+          <p class="BDemo-example-caption">لیست HTML با data-*</p>
+          <ul id="source-list" class="BDemo-example-list">
+            <li data-city="تهران">سارا</li>
+            <li data-city="شیراز">نیما</li>
+          </ul>
+          <div id="list-table"></div>
+          <p class="BDemo-example-caption">مقادیر ساده از Set</p>
+          <div id="set-table"></div>
+        </div><div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>HTML + JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="code-list">کپی کد</button></div><pre id="code-list"></pre></div></div>
+      </article>
+      <article class="BDemo-example-panel" id="panel-json" role="tabpanel" aria-labelledby="tab-json" tabindex="0" hidden>
+        <div class="BDemo-example-head"><div><h3>دریافت JSON و دادهٔ ناهمگام</h3><p>آدرس فایل، dataPath، وضعیت خطا و دریافت دوباره با reload.</p></div><span class="BDemo-example-index" aria-hidden="true">04</span></div>
+        <div class="BDemo-example-layout"><div id="preview-json" class="BDemo-example-preview">
+          <p class="BDemo-example-caption">فایل examples/people.json</p>
+          <div id="json-table"></div>
+          <div class="BDemo-example-actions"><button class="BDemo-small-button" id="json-reload" type="button">دریافت دوباره</button></div>
+          <p id="json-result" class="BDemo-example-output" aria-live="polite">در انتظار دریافت اطلاعات…</p>
+          <p class="BDemo-example-caption">تابع async / Promise</p>
+          <div id="async-table"></div>
+          <p class="BDemo-note">برای خواندن فایل JSON نمونه را از طریق سرور HTTP اجرا کنید، نه file://.</p>
+        </div><div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>HTML + JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="code-json">کپی کد</button></div><pre id="code-json"></pre></div></div>
+      </article>
+      <article class="BDemo-example-panel" id="panel-api" role="tabpanel" aria-labelledby="tab-api" tabindex="0" hidden>
+        <div class="BDemo-example-head"><div><h3>کنترل جدول و دریافت اطلاعات</h3><p>مرتب‌سازی، فیلتر، تم، ستون‌ها، صفحه‌بندی و دریافت خروجی با API.</p></div><span class="BDemo-example-index" aria-hidden="true">05</span></div>
+        <div class="BDemo-example-layout"><div id="preview-api" class="BDemo-example-preview">
+          <div id="api-table"></div>
+          <div class="BDemo-example-actions">
+            <button class="BDemo-small-button" id="api-filter" type="button">فیلتر شهر تهران</button>
+            <button class="BDemo-small-button" id="api-clear" type="button">پاک کردن فیلتر</button>
+            <button class="BDemo-small-button" id="api-sort" type="button">مرتب‌سازی نام</button>
+            <button class="BDemo-small-button" id="api-column" type="button">نمایش/حذف ستون شهر</button>
+            <button class="BDemo-small-button" id="api-filters" type="button">روشن/خاموش کردن فیلترها</button>
+            <button class="BDemo-small-button" id="api-theme" type="button">تغییر تم</button>
+            <button class="BDemo-small-button" id="api-mode" type="button">تغییر حالت نمایش</button>
+            <button class="BDemo-small-button" id="api-page" type="button">رفتن به صفحهٔ ۲</button>
+            <button class="BDemo-small-button" id="api-load" type="button">بارگذاری بیشتر</button>
+            <button class="BDemo-small-button" id="api-inspect" type="button">اطلاعات و انتخاب‌ها</button>
+            <label class="BDemo-select-label">فرمت
+              <select id="api-export-format"><option value="xlsx">Excel</option><option value="html">HTML</option><option value="txt">Text</option><option value="csv">CSV</option></select>
+            </label>
+            <label class="BDemo-select-label">محدوده
+              <select id="api-export-scope"><option value="filtered">فیلترشده</option><option value="page">صفحهٔ فعلی</option><option value="all">همه</option></select>
+            </label>
+            <label class="BDemo-checkline"><input id="api-export-hidden" type="checkbox">ستون‌های مخفی</label>
+            <button class="BDemo-small-button" id="api-export" type="button">خروجی</button>
+          </div>
+          <p id="api-result" class="BDemo-example-output" aria-live="polite">روی خانه یا ردیف کلیک کنید یا یکی از کنترل‌ها را امتحان کنید.</p>
+        </div><div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>HTML + JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="code-api">کپی کد</button></div><pre id="code-api"></pre></div></div>
+      </article>
+      <article class="BDemo-example-panel" id="panel-advanced" role="tabpanel" aria-labelledby="tab-advanced" tabindex="0" hidden>
+        <div class="BDemo-example-head"><div><h3>متن سفارشی، RTL و تنظیمات پیشرفته</h3><p>نمونهٔ ترجمه، جست‌وجوی قابل شخصی‌سازی، تم تیره و رویداد رسم.</p></div><span class="BDemo-example-index" aria-hidden="true">06</span></div>
+        <div class="BDemo-example-layout"><div id="preview-advanced" class="BDemo-example-preview">
+          <div id="advanced-table"></div><p id="advanced-result" class="BDemo-example-output" aria-live="polite">عبارت cafe را بدون علامت تایپ کنید.</p>
+          <p class="BDemo-note">در این مثال کنترل ستون و خروجی غیرفعال است؛ سایر گزینه‌ها در مستندات موجودند.</p>
+        </div><div class="BDemo-code-box"><div class="BDemo-code-box-head"><span>HTML + JavaScript</span><button type="button" class="BDemo-copy" data-copy-target="code-advanced">کپی کد</button></div><pre id="code-advanced"></pre></div></div>
       </article>
     </section>
   </main>
