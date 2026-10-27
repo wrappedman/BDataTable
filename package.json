@@ -1,0 +1,14 @@
+{
+  "name": "bdatatable",
+  "version": "1.0.0",
+  "description": "Dependency-free JavaScript data tables with built-in styling, search, sorting, pagination and export.",
+  "main": "BDataTable.js",
+  "files": ["BDataTable.js", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["datatable", "table", "pagination", "vanilla-js", "rtl"],
+  "license": "GPL-3.0-only",
+  "engines": { "node": ">=18" },
+  "devDependencies": { "jsdom": "^26.1.0" }
+}
